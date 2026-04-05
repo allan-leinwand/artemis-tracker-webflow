@@ -1392,17 +1392,18 @@ window.onerror = function (msg, url, line) {
       // Data status — only update DOM when values change to prevent flicker
       if (dom.dataStatus) {
         var newStatusText, newStatusClass;
+        var isMobile = window.innerWidth <= 768;
         if (dataSource === 'live') {
-          newStatusText = 'Live data from NASA AROW';
+          newStatusText = isMobile ? 'Live data' : 'Live data from NASA AROW';
           newStatusClass = 'data-status data-status--live';
         } else if (dataSource === 'horizons') {
-          newStatusText = communityOrbitAvailable ? 'Real-time orbital data via AROW' : 'Real-time data from JPL Horizons';
+          newStatusText = isMobile ? 'Real-time data' : (communityOrbitAvailable ? 'Real-time orbital data via AROW' : 'Real-time data from JPL Horizons');
           newStatusClass = 'data-status data-status--live';
         } else if (dataSource === 'prelaunch') {
-          newStatusText = 'Pre-launch \u2014 data available after liftoff';
+          newStatusText = isMobile ? 'Pre-launch' : 'Pre-launch \u2014 data available after liftoff';
           newStatusClass = 'data-status data-status--prelaunch';
         } else {
-          newStatusText = 'Simulated data (AROW unavailable)';
+          newStatusText = isMobile ? 'Simulated data' : 'Simulated data (AROW unavailable)';
           newStatusClass = 'data-status data-status--mock';
         }
         if (dom.dataStatus.textContent !== newStatusText) {

@@ -2380,6 +2380,10 @@ h2 + .dash-disclaimer {
     grid-row: 1;
   }
 
+  .site-subtitle {
+    display: none;
+  }
+
   .data-status {
     grid-column: 2;
     grid-row: 1;
@@ -2387,9 +2391,6 @@ h2 + .dash-disclaimer {
     height: auto;
     padding: 0.25rem 0.6rem;
     font-size: 0.7rem;
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
   }
 
