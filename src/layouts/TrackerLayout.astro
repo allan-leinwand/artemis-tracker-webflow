@@ -1,0 +1,284 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  variant: "home" | "sub";
+  /** Subpage nav: which link gets aria-current="page" */
+  current?:
+    | "crew"
+    | "crew-schedule"
+    | "spacecraft"
+    | "about"
+    | "sources";
+  og?: boolean;
+  /** Home loads sonification.js before app.js */
+  scripts: "home" | "sub";
+}
+
+const { title, description, variant, current, og = false, scripts } = Astro.props;
+const b = import.meta.env.BASE_URL;
+const apiBase = `${b}api/arow-proxy?endpoint=`;
+const nfBase = `${b}api/nf/`;
+const loadSonification = scripts === "home";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    {
+      og ? (
+        <>
+          <meta
+            property="og:title"
+            content="Artemis II Live Tracker — Real-Time Moon Mission Dashboard"
+          />
+          <meta
+            property="og:description"
+            content="Track NASA's Artemis II Moon mission live. Real-time telemetry from JPL Horizons, crew schedule, space weather, audio sonification radar."
+          />
+          <meta property="og:image" content={`${b}img/artemis-ii-launch.jpg`} />
+          <meta property="og:url" content={new URL(b, Astro.url.origin).href} />
+          <meta property="og:type" content="website" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content="Artemis II Live Tracker" />
+          <meta
+            name="twitter:description"
+            content="Real-time telemetry, crew schedule, space weather, and audio radar for NASA's first crewed Moon mission since 1972."
+          />
+          <meta name="twitter:image" content={`${b}img/artemis-ii-launch.jpg`} />
+        </>
+      ) : null
+    }
+    <meta name="theme-color" content="#0a0e17" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href={`${b}css/style.css`} />
+  </head>
+  <body>
+    <a id="skip-nav" class="skip-nav" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="container site-header__inner">
+        {
+          variant === "home" ? (
+            <a class="site-title" href={b}>
+              <span>Artemis II</span> Tracker
+            </a>
+          ) : (
+            <a class="site-title" aria-label="Artemis II Mission Tracker — Home" href={b}>
+              <span>Artemis II</span> Tracker
+            </a>
+          )
+        }
+
+        <div
+          id="data-status"
+          class="data-status data-status--prelaunch"
+          role={variant === "sub" ? "status" : undefined}
+          aria-live={variant === "sub" ? "polite" : undefined}
+        >
+          {
+            variant === "home"
+              ? "Pre-launch — data available after liftoff"
+              : "Pre-launch — data available after liftoff"
+          }
+        </div>
+
+        <button
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="main-nav"
+          aria-label="Open menu"
+          type="button"
+        >
+          <svg class="icon-menu" viewBox="0 0 24 24" aria-hidden="true"
+            ><path d="M3 6h18M3 12h18M3 18h18"></path></svg
+          >
+          <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true"
+            ><path d="M6 6l12 12M6 18L18 6"></path></svg
+          >
+        </button>
+
+        <nav id="main-nav" class="site-nav" aria-label="Main navigation">
+          <ul>
+            {
+              variant === "home" ? (
+                <>
+                  <li>
+                    <a aria-current="page" href={b}>
+                      Home
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#dashboard">Live Data</a>
+                  </li>
+                  <li>
+                    <a href="#spacecraft-telemetry">Telemetry</a>
+                  </li>
+                  <li>
+                    <a href="#space-weather">Space Weather</a>
+                  </li>
+                  <li>
+                    <a href="#dsn">DSN</a>
+                  </li>
+                  <li>
+                    <a href="#audio-radar">Audio Radar</a>
+                  </li>
+                  <li>
+                    <a href="#livestream">Live Coverage</a>
+                  </li>
+                  <li>
+                    <a href="#timeline">Timeline</a>
+                  </li>
+                  <li>
+                    <a href="#news">News</a>
+                  </li>
+                  <li>
+                    <a href={`${b}crew`}>Crew</a>
+                  </li>
+                  <li>
+                    <a href={`${b}crew-schedule`}>Crew Schedule</a>
+                  </li>
+                  <li>
+                    <a href={`${b}spacecraft`}>Spacecraft</a>
+                  </li>
+                  <li>
+                    <a href={`${b}about`}>About</a>
+                  </li>
+                  <li>
+                    <a href={`${b}sources`}>Data Sources</a>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <a href={b}>Home</a>
+                  </li>
+                  <li>
+                    <a href={`${b}#timeline`}>Timeline</a>
+                  </li>
+                  <li>
+                    <a href={`${b}crew`} aria-current={current === "crew" ? "page" : undefined}>
+                      Crew
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={`${b}crew-schedule`}
+                      aria-current={current === "crew-schedule" ? "page" : undefined}
+                    >
+                      Crew Schedule
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={`${b}spacecraft`}
+                      aria-current={current === "spacecraft" ? "page" : undefined}
+                    >
+                      Spacecraft
+                    </a>
+                  </li>
+                  <li>
+                    <a href={`${b}#news`}>News</a>
+                  </li>
+                  <li>
+                    <a href={`${b}#livestream`}>Live stream</a>
+                  </li>
+                  <li>
+                    <a href={`${b}about`} aria-current={current === "about" ? "page" : undefined}>
+                      About
+                    </a>
+                  </li>
+                  {current === "sources" ? (
+                    <li>
+                      <a aria-current="page" href={`${b}sources`}>
+                        Data Sources
+                      </a>
+                    </li>
+                  ) : null}
+                </>
+              )
+            }
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    {
+      variant === "home" ? (
+        <a href="#main-content" class="back-to-top" id="back-to-top" aria-label="Back to top">
+          &uarr;
+        </a>
+      ) : null
+    }
+
+    <footer class="site-footer">
+      <div class="container">
+        {
+          variant === "home" ? (
+            <>
+              <p>
+                Built by Jakob Rosin, for Jakob Rosin — and every other space nerd who stayed up for
+                launch night. <span aria-hidden="true">🚀</span> Contact:{" "}
+                <a href="mailto:jakob.rsn@gmail.com">jakob.rsn@gmail.com</a> ·{" "}
+                <a href="https://universeodon.com/@jakobrosin" rel="me">
+                  Mastodon
+                </a>
+              </p>
+              <p>
+                Data from NASA JPL Horizons &amp; DONKI. Not affiliated with NASA. ·{" "}
+                <a href={`${b}sources`}>Data Sources</a>
+              </p>
+            </>
+          ) : (
+            <>
+              <p>Data from NASA AROW. Not affiliated with NASA. Built by Jakob Rosin.</p>
+              <p>All times in local time. Metric units with imperial equivalents.</p>
+            </>
+          )
+        }
+      </div>
+    </footer>
+
+    <script
+      is:inline
+      define:vars={{ apiBase, nfBase, assetBase: b, loadSonification }}
+    >
+      window.__TRACKER_API_BASE__ = apiBase;
+      window.__FUNCTIONS_PROXY_BASE__ = nfBase;
+      (function () {
+        function loadScript(src) {
+          return new Promise(function (resolve, reject) {
+            var s = document.createElement("script");
+            s.src = assetBase + src;
+            s.onload = resolve;
+            s.onerror = reject;
+            document.body.appendChild(s);
+          });
+        }
+        loadScript("js/data.js")
+          .then(function () {
+            return loadSonification ? loadScript("js/sonification.js") : Promise.resolve();
+          })
+          .then(function () {
+            return loadScript("js/app.js");
+          })
+          .catch(function (e) {
+            console.error("Failed to load tracker scripts:", e);
+          });
+      })();
+    </script>
+  </body>
+</html>

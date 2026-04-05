@@ -1,0 +1,14 @@
+---
+import TrackerLayout from "../layouts/TrackerLayout.astro";
+import crewMain from "../html/crew-main.html?raw";
+---
+
+<TrackerLayout
+  title="Crew — Artemis II Mission Tracker"
+  description="Meet the Artemis II crew: Commander Reid Wiseman, Pilot Victor Glover, Mission Specialists Christina Koch and Jeremy Hansen."
+  variant="sub"
+  current="crew"
+  scripts="sub"
+>
+  <Fragment set:html={crewMain} />
+</TrackerLayout>

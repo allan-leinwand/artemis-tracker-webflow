@@ -1,0 +1,14 @@
+---
+import TrackerLayout from "../layouts/TrackerLayout.astro";
+import main from "../html/crew-schedule-main.html?raw";
+---
+
+<TrackerLayout
+  title="Crew Schedule — Artemis II Mission Tracker"
+  description="Full 10-day crew schedule for NASA's Artemis II mission — day-by-day activities from launch to splashdown."
+  variant="sub"
+  current="crew-schedule"
+  scripts="sub"
+>
+  <Fragment set:html={main} />
+</TrackerLayout>

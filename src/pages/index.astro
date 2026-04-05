@@ -1,0 +1,14 @@
+---
+import TrackerLayout from "../layouts/TrackerLayout.astro";
+import indexMain from "../html/index-main.html?raw";
+---
+
+<TrackerLayout
+  title="Artemis II Mission Tracker"
+  description="Track NASA's Artemis II crewed mission around the Moon in real time. Live telemetry, mission timeline, crew bios, and spacecraft data."
+  variant="home"
+  og={true}
+  scripts="home"
+>
+  <Fragment set:html={indexMain} />
+</TrackerLayout>

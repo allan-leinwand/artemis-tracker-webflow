@@ -1,0 +1,14 @@
+---
+import TrackerLayout from "../layouts/TrackerLayout.astro";
+import main from "../html/sources-main.html?raw";
+---
+
+<TrackerLayout
+  title="Data Sources — Artemis II Mission Tracker"
+  description="Data sources used by the Artemis II Mission Tracker — APIs, telemetry feeds, and open data."
+  variant="sub"
+  current="sources"
+  scripts="sub"
+>
+  <Fragment set:html={main} />
+</TrackerLayout>

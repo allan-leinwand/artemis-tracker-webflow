@@ -1,0 +1,14 @@
+---
+import TrackerLayout from "../layouts/TrackerLayout.astro";
+import main from "../html/spacecraft-main.html?raw";
+---
+
+<TrackerLayout
+  title="Spacecraft — Artemis II Mission Tracker"
+  description="Artemis II spacecraft and systems: Orion crew capsule, heat shield, ECLSS life support, European Service Module, and SLS rocket."
+  variant="sub"
+  current="spacecraft"
+  scripts="sub"
+>
+  <Fragment set:html={main} />
+</TrackerLayout>

@@ -1,0 +1,14 @@
+---
+import TrackerLayout from "../layouts/TrackerLayout.astro";
+import main from "../html/about-main.html?raw";
+---
+
+<TrackerLayout
+  title="About — Artemis II Mission Tracker"
+  description="About NASA's Artemis II mission — the first crewed flight to the Moon in over 50 years."
+  variant="sub"
+  current="about"
+  scripts="sub"
+>
+  <Fragment set:html={main} />
+</TrackerLayout>
