@@ -1,6 +1,12 @@
 ---
 import TrackerLayout from "../layouts/TrackerLayout.astro";
-import indexMain from "../html/index-main.html?raw";
+import indexMainRaw from "../html/index-main.html?raw";
+
+// Fix relative image paths for mount-path deployment
+const rawBase = import.meta.env.BASE_URL;
+const b = rawBase.endsWith("/") ? rawBase : rawBase + "/";
+// Replace all bare "img/" references (in src, srcset, after commas) with base-prefixed paths
+const indexMain = indexMainRaw.replace(/(["=, ])img\//g, `$1${b}img/`);
 ---
 
 <TrackerLayout

@@ -197,6 +197,29 @@ a:hover, a:focus-visible {
   color: var(--accent);
 }
 
+.site-subtitle {
+  font-size: 0.55em;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  margin-left: 0.3em;
+}
+
+.site-title-group {
+  display: flex;
+  align-items: baseline;
+}
+
+.cloud-link {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-left: 0.2em;
+}
+.cloud-link:hover {
+  color: var(--accent);
+}
+
 /* ── Data status indicator ─────────────────────────────────────────────── */
 
 .data-status {
@@ -1250,6 +1273,10 @@ a:hover, a:focus-visible {
 
 .about-text p + p {
   margin-top: 1rem;
+}
+
+.about-text h2 {
+  margin-top: 2.5rem;
 }
 
 /* ── Sources page ──────────────────────────────────────────────────────── */
@@ -2314,7 +2341,7 @@ a:hover, a:focus-visible {
     gap: 0.5rem;
   }
 
-  .site-title {
+  .site-title-group {
     grid-column: 1;
     grid-row: 1;
   }

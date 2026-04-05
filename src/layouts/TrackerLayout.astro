@@ -16,9 +16,12 @@ interface Props {
 }
 
 const { title, description, variant, current, og = false, scripts } = Astro.props;
-const b = import.meta.env.BASE_URL;
+// Webflow Cloud overrides astro.config.mjs and sets base: "/artemis" (no trailing slash).
+// Ensure our prefix always ends with "/" so asset paths resolve correctly.
+const rawBase = import.meta.env.BASE_URL;
+const b = rawBase.endsWith("/") ? rawBase : rawBase + "/";
 const apiBase = `${b}api/arow-proxy?endpoint=`;
-const nfBase = `${b}api/nf/`;
+const internalApiBase = `${b}api/`;
 const loadSonification = scripts === "home";
 ---
 
@@ -56,11 +59,13 @@ const loadSonification = scripts === "home";
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://artemis.cdnspace.ca" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href={`${b}css/style.css`} />
+    {variant === "home" && <link rel="preload" as="image" type="image/avif" href={`${b}img/artemis-ii-launch.avif`} />}
   </head>
   <body>
     <a id="skip-nav" class="skip-nav" href="#main-content">Skip to main content</a>
@@ -69,13 +74,17 @@ const loadSonification = scripts === "home";
       <div class="container site-header__inner">
         {
           variant === "home" ? (
-            <a class="site-title" href={b}>
-              <span>Artemis II</span> Tracker
-            </a>
+            <div class="site-title-group">
+              <a class="site-title" href={b}>
+                <span>Artemis II</span> Tracker
+              </a><small class="site-subtitle">running on <a class="cloud-link" href="https://webflow.com/feature/cloud" target="_blank" rel="noopener noreferrer">Webflow Cloud &#8599;</a></small>
+            </div>
           ) : (
-            <a class="site-title" aria-label="Artemis II Mission Tracker — Home" href={b}>
-              <span>Artemis II</span> Tracker
-            </a>
+            <div class="site-title-group">
+              <a class="site-title" aria-label="Artemis II Mission Tracker — Home" href={b}>
+                <span>Artemis II</span> Tracker
+              </a><small class="site-subtitle">running on <a class="cloud-link" href="https://webflow.com/feature/cloud" target="_blank" rel="noopener noreferrer">Webflow Cloud &#8599;</a></small>
+            </div>
           )
         }
 
@@ -163,7 +172,28 @@ const loadSonification = scripts === "home";
                     <a href={b}>Home</a>
                   </li>
                   <li>
+                    <a href={`${b}#dashboard`}>Live Data</a>
+                  </li>
+                  <li>
+                    <a href={`${b}#spacecraft-telemetry`}>Telemetry</a>
+                  </li>
+                  <li>
+                    <a href={`${b}#space-weather`}>Space Weather</a>
+                  </li>
+                  <li>
+                    <a href={`${b}#dsn`}>DSN</a>
+                  </li>
+                  <li>
+                    <a href={`${b}#audio-radar`}>Audio Radar</a>
+                  </li>
+                  <li>
+                    <a href={`${b}#livestream`}>Live Coverage</a>
+                  </li>
+                  <li>
                     <a href={`${b}#timeline`}>Timeline</a>
+                  </li>
+                  <li>
+                    <a href={`${b}#news`}>News</a>
                   </li>
                   <li>
                     <a href={`${b}crew`} aria-current={current === "crew" ? "page" : undefined}>
@@ -187,23 +217,15 @@ const loadSonification = scripts === "home";
                     </a>
                   </li>
                   <li>
-                    <a href={`${b}#news`}>News</a>
-                  </li>
-                  <li>
-                    <a href={`${b}#livestream`}>Live stream</a>
-                  </li>
-                  <li>
                     <a href={`${b}about`} aria-current={current === "about" ? "page" : undefined}>
                       About
                     </a>
                   </li>
-                  {current === "sources" ? (
-                    <li>
-                      <a aria-current="page" href={`${b}sources`}>
-                        Data Sources
-                      </a>
-                    </li>
-                  ) : null}
+                  <li>
+                    <a href={`${b}sources`} aria-current={current === "sources" ? "page" : undefined}>
+                      Data Sources
+                    </a>
+                  </li>
                 </>
               )
             }
@@ -254,10 +276,10 @@ const loadSonification = scripts === "home";
 
     <script
       is:inline
-      define:vars={{ apiBase, nfBase, assetBase: b, loadSonification }}
+      define:vars={{ apiBase, internalApiBase, assetBase: b, loadSonification }}
     >
       window.__TRACKER_API_BASE__ = apiBase;
-      window.__FUNCTIONS_PROXY_BASE__ = nfBase;
+      window.__INTERNAL_API_BASE__ = internalApiBase;
       (function () {
         function loadScript(src) {
           return new Promise(function (resolve, reject) {

@@ -128,8 +128,8 @@
           <article class="source-card">
             <h2 class="source-card__name">JPL Horizons</h2>
             <p class="source-card__desc">
-              NASA&rsquo;s ephemeris computation service, accessed through a Netlify
-              serverless function proxy. Provides precise orbital data for spacecraft
+              NASA&rsquo;s ephemeris computation service, accessed through a
+              Cloudflare Workers proxy. Provides precise orbital data for spacecraft
               ID&nbsp;&minus;1024 (Orion). Used as a fallback when the community orbit API is
               unavailable, and for 2-hour historical sparkline data.
             </p>
@@ -144,7 +144,7 @@
               </div>
               <div>
                 <dt>Endpoint</dt>
-                <dd><code>ssd.jpl.nasa.gov/horizons_batch.cgi</code> (via Netlify proxy)</dd>
+                <dd><code>ssd.jpl.nasa.gov/horizons_batch.cgi</code> (via Cloudflare Workers proxy)</dd>
               </div>
             </dl>
             <p class="source-card__credit">
@@ -160,7 +160,7 @@
               The Space Weather Database Of Notifications, Knowledge, Information (DONKI)
               from NASA&rsquo;s Community Coordinated Modeling Center. Provides solar
               activity data critical for assessing crew radiation risk during deep-space
-              transit. Accessed via a Netlify serverless function.
+              transit. Accessed via a Cloudflare Workers proxy.
             </p>
             <dl class="source-card__meta">
               <div>
@@ -173,7 +173,7 @@
               </div>
               <div>
                 <dt>Endpoint</dt>
-                <dd><code>ccmc.gsfc.nasa.gov/donki/</code> (via Netlify proxy)</dd>
+                <dd><code>ccmc.gsfc.nasa.gov/donki/</code> (via Cloudflare Workers proxy)</dd>
               </div>
             </dl>
             <p class="source-card__credit">
@@ -216,7 +216,7 @@
             <h2 class="source-card__name">Mission News</h2>
             <p class="source-card__desc">
               Aggregated news articles and updates about the Artemis&nbsp;II mission,
-              served through a Netlify serverless function that fetches and filters
+              served through a Cloudflare Workers function that fetches and filters
               relevant coverage.
             </p>
             <dl class="source-card__meta">

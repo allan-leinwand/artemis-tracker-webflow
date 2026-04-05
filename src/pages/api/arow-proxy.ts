@@ -29,7 +29,7 @@ export const GET: APIRoute = async ({ url }) => {
       status: res.status,
       headers: {
         "Content-Type": ct,
-        "Cache-Control": "public, max-age=5",
+        "Cache-Control": "public, max-age=2, stale-while-revalidate=8",
       },
     });
   } catch {

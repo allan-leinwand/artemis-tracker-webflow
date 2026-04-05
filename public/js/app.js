@@ -53,7 +53,7 @@ window.onerror = function (msg, url, line) {
 
   // ── Community AROW API (artemis.cdnspace.ca) ───────────────────────────
   var COMMUNITY_API_BASE = (typeof window !== 'undefined' && window.__TRACKER_API_BASE__) || '/api/arow-proxy?endpoint=';
-  var FUNCTIONS_PROXY_BASE = (typeof window !== 'undefined' && window.__FUNCTIONS_PROXY_BASE__) || '/api/nf/';
+  var INTERNAL_API_BASE = (typeof window !== 'undefined' && window.__INTERNAL_API_BASE__) || '/api/';
   var COMMUNITY_ORBIT_POLL_MS = 300000; // 5 minutes
   var COMMUNITY_DSN_POLL_MS = 10000;    // 10 seconds
   var AROW_POLL_MS = 2000;              // 2 seconds for AROW polling
@@ -312,13 +312,13 @@ window.onerror = function (msg, url, line) {
     };
   }
 
-  // ── JPL Horizons data via Netlify proxy ────────────────────────────────
+  // ── JPL Horizons–compatible telemetry (Astro /api/horizons) ─────────────
 
   function tryFetchHorizons() {
     var controller = new AbortController();
     var timer = setTimeout(function () { controller.abort(); }, 10000);
 
-    return fetch(FUNCTIONS_PROXY_BASE + 'horizons', { signal: controller.signal })
+    return fetch(INTERNAL_API_BASE + 'horizons', { signal: controller.signal })
       .then(function (resp) {
         clearTimeout(timer);
         if (!resp.ok) return null;
@@ -2370,7 +2370,7 @@ window.onerror = function (msg, url, line) {
 
   // ── News rendering ─────────────────────────────────────────────────────
 
-  var NEWS_API_URL = FUNCTIONS_PROXY_BASE + 'news';
+  var NEWS_API_URL = INTERNAL_API_BASE + 'news';
   var NEWS_POLL_MS = 300000; // 5 minutes
 
   function formatRelativeTime(isoDate) {
@@ -3053,7 +3053,7 @@ window.onerror = function (msg, url, line) {
 
   // ── Space Weather ────────────────────────────────────────────────────
 
-  var SW_URL = FUNCTIONS_PROXY_BASE + 'space-weather';
+  var SW_URL = INTERNAL_API_BASE + 'space-weather';
   var SW_POLL_MS = 900000; // 15 minutes
 
   /** Format a UTC ISO string to EET with UTC in parentheses */
@@ -3796,13 +3796,13 @@ window.onerror = function (msg, url, line) {
     if (crewNextEl) crewNextEl.textContent = '';
     if (timelineSection) { timelineSection.style.opacity = '0.3'; timelineSection.setAttribute('aria-busy', 'true'); }
 
-    // Fetch live schedule from GitHub (no Netlify build needed)
+    // Fetch live schedule from GitHub
     fetchRemoteSchedule().finally(function() {
       if (timelineSection) { timelineSection.style.opacity = '1'; timelineSection.removeAttribute('aria-busy'); }
     });
 
     // Pre-fill sparklines with 2h of historical data from Horizons
-    fetch(FUNCTIONS_PROXY_BASE + 'horizons?history=2h')
+    fetch(INTERNAL_API_BASE + 'horizons?history=2h')
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(data) {
         if (data && data.history) {
