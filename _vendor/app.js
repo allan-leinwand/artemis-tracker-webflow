@@ -3643,14 +3643,17 @@ window.onerror = function (msg, url, line) {
     for (var i = 0; i < sparklineCardMap.length; i++) {
       var el = document.getElementById(sparklineCardMap[i].card);
       if (!el || el.querySelector('.sparkline-svg')) continue;
+      var dd = document.createElement('dd');
+      dd.className = 'dash-sparkline';
       var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('class', 'sparkline-svg');
       svg.setAttribute('aria-hidden', 'true');
       svg.setAttribute('preserveAspectRatio', 'none');
-      el.appendChild(svg);
+      dd.appendChild(svg);
       var sr = document.createElement('span');
       sr.className = 'sr-only sparkline-trend';
-      el.appendChild(sr);
+      dd.appendChild(sr);
+      el.appendChild(dd);
     }
   }
 
@@ -3659,11 +3662,14 @@ window.onerror = function (msg, url, line) {
   function injectProgressBar() {
     var moonCard = document.getElementById('val-dist-moon');
     if (!moonCard || moonCard.querySelector('.moon-progress')) return;
+    var dd = document.createElement('dd');
+    dd.className = 'dash-progress';
     var bar = document.createElement('div');
     bar.className = 'moon-progress';
     bar.setAttribute('role', 'img');
     bar.innerHTML = '<div class="moon-progress__fill"></div><span class="sr-only moon-progress__sr"></span>';
-    moonCard.appendChild(bar);
+    dd.appendChild(bar);
+    moonCard.appendChild(dd);
   }
 
   function updateProgressBar(t) {

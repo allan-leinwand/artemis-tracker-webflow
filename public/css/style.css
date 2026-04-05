@@ -498,6 +498,7 @@ a:hover, a:focus-visible {
   padding: 1.25rem;
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 120px;
 }
 
 .dash-card:hover {
@@ -515,6 +516,7 @@ a:hover, a:focus-visible {
 .dash-card--primary {
   border-top-width: 3px;
   padding: 1.5rem 1.25rem;
+  min-height: 150px;
 }
 
 .dash-card--primary .dash-primary {
@@ -2636,6 +2638,12 @@ h2 + .dash-disclaimer {
 }
 
 /* ── Sparkline mini-charts ─────────────────────────────────────────── */
+
+.dash-sparkline,
+.dash-progress {
+  margin: 0;
+  padding: 0;
+}
 
 .sparkline-svg {
   display: block;
