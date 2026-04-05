@@ -108,8 +108,12 @@ body {
 }
 
 .section {
-  padding: 3.5rem 0;
+  padding: 2.5rem 0;
   border-bottom: 1px solid var(--border);
+}
+
+.hero + .section {
+  padding-top: 1.5rem;
 }
 
 .section:last-of-type {
@@ -140,7 +144,7 @@ h1 {
 h2 {
   font-size: 1.4rem;
   font-weight: 700;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   padding-bottom: 0.6rem;
   border-bottom: 2px solid var(--accent);
   display: inline-block;
@@ -165,9 +169,9 @@ a:hover, a:focus-visible {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(15, 20, 32, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgb(15, 20, 32);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-bottom: 1px solid var(--border);
   padding: 0.75rem 0;
 }
@@ -360,7 +364,7 @@ a:hover, a:focus-visible {
 /* ── Hero ──────────────────────────────────────────────────────────────── */
 
 .hero {
-  padding: 4rem 0 3rem;
+  padding: 4rem 0 1rem;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -414,9 +418,9 @@ a:hover, a:focus-visible {
 }
 
 .hero__met {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   font-family: var(--font-mono);
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--accent-light);
   text-shadow: 0 0 30px var(--accent-glow);
@@ -440,21 +444,23 @@ a:hover, a:focus-visible {
 }
 
 .hero__crew-activity {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.25rem 0.75rem;
 }
 
 .hero__crew-now {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-bright);
+  display: none;
 }
 
 .hero__crew-next {
   font-size: 0.85rem;
   color: var(--text-muted);
-  margin-top: 0.25rem;
 }
 
 .hero__crew-link {
@@ -489,7 +495,7 @@ a:hover, a:focus-visible {
   border: 1px solid var(--border);
   border-top: 2px solid var(--accent);
   border-radius: var(--card-radius);
-  padding: 1.25rem 1rem;
+  padding: 1.25rem;
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -1057,7 +1063,7 @@ a:hover, a:focus-visible {
 }
 
 .crew-card__name {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   margin-bottom: 0.25rem;
 }
 
@@ -1105,7 +1111,7 @@ a:hover, a:focus-visible {
 }
 
 .spec-card__desc {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   margin-bottom: 1rem;
   line-height: 1.5;
@@ -1133,7 +1139,7 @@ a:hover, a:focus-visible {
 
 .news-list {
   display: grid;
-  gap: 1rem;
+  gap: var(--gap);
 }
 
 .news-item {
@@ -1175,7 +1181,7 @@ a:hover, a:focus-visible {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0;
+  gap: 0.5rem;
   font-size: 0.78rem;
   font-family: var(--font-mono);
   color: var(--text-muted);
@@ -1276,7 +1282,7 @@ a:hover, a:focus-visible {
 }
 
 .about-text h2 {
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
 }
 
 /* ── Sources page ──────────────────────────────────────────────────────── */
@@ -1304,7 +1310,7 @@ a:hover, a:focus-visible {
 }
 
 .source-card__name {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-bright);
   margin-bottom: 0.6rem;
@@ -1587,9 +1593,18 @@ a:hover, a:focus-visible {
   font-size: 0.8rem;
   font-style: italic;
   color: var(--text-muted);
-  text-align: center;
+  text-align: left;
   margin-top: 1.25rem;
   line-height: 1.5;
+}
+
+.dash-disclaimer a {
+  color: var(--accent);
+}
+
+h2 + .dash-disclaimer {
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
 }
 
 /* ── Spacecraft Telemetry (AROW) ─────────────────────────────────────── */
@@ -1632,7 +1647,7 @@ a:hover, a:focus-visible {
   font-size: 0.8rem;
   font-style: italic;
   color: var(--text-muted);
-  text-align: center;
+  text-align: left;
   margin-top: 1.25rem;
   line-height: 1.5;
 }
@@ -1779,8 +1794,11 @@ a:hover, a:focus-visible {
 
 .dsn-attribution {
   font-size: 0.8rem;
+  font-style: italic;
   color: var(--text-muted);
+  text-align: left;
   margin-top: 1.25rem;
+  line-height: 1.5;
 }
 
 @media (max-width: 480px) {
@@ -2295,9 +2313,23 @@ a:hover, a:focus-visible {
   padding: 0.5rem 0;
 }
 
+.sw-mobile-collapse {
+  margin-top: 1.25rem;
+}
+
+.sw-mobile-collapse > summary {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+}
+
 .sw-attribution {
   font-size: 0.8rem;
+  font-style: italic;
   color: var(--text-muted);
+  text-align: left;
+  margin-top: 1.25rem;
+  line-height: 1.5;
 }
 
 @media (max-width: 480px) {
@@ -2464,11 +2496,11 @@ a:hover, a:focus-visible {
   }
 
   .section {
-    padding: 2.5rem 0;
+    padding: 1.75rem 0;
   }
 
   .hero {
-    padding: 2rem 0 1.5rem;
+    padding: 2rem 0 1rem;
   }
 
   .hero__status {
@@ -2644,8 +2676,9 @@ a:hover, a:focus-visible {
 
 .trajectory-viz {
   max-width: var(--max-width);
-  margin: 0 auto 2rem;
+  margin: 1rem auto 0;
   padding: 0 var(--gap);
+  text-align: center;
 }
 
 .trajectory-svg {
@@ -2665,10 +2698,10 @@ a:hover, a:focus-visible {
 }
 
 .traj-path {
-  stroke: var(--border-light);
-  stroke-width: 1.5;
-  stroke-dasharray: 6 4;
-  opacity: 0.5;
+  stroke: var(--text-muted);
+  stroke-width: 1;
+  stroke-dasharray: 4 6;
+  opacity: 0.45;
 }
 
 .traj-orion {

@@ -1390,41 +1390,52 @@ window.onerror = function (msg, url, line) {
         dom.metLabel.textContent = metH < 0 ? 'Countdown to Launch' : 'Mission Elapsed Time';
       }
 
-      // Data status
+      // Data status — only update DOM when values change to prevent flicker
       if (dom.dataStatus) {
+        var newStatusText, newStatusClass;
         if (dataSource === 'live') {
-          dom.dataStatus.textContent = 'Live data from NASA AROW';
-          dom.dataStatus.className = 'data-status data-status--live';
+          newStatusText = 'Live data from NASA AROW';
+          newStatusClass = 'data-status data-status--live';
         } else if (dataSource === 'horizons') {
-          var hzLabel = communityOrbitAvailable ? 'Real-time orbital data via AROW' : 'Real-time data from JPL Horizons';
-          dom.dataStatus.textContent = hzLabel;
-          dom.dataStatus.className = 'data-status data-status--live';
+          newStatusText = communityOrbitAvailable ? 'Real-time orbital data via AROW' : 'Real-time data from JPL Horizons';
+          newStatusClass = 'data-status data-status--live';
         } else if (dataSource === 'prelaunch') {
-          dom.dataStatus.textContent = 'Pre-launch \u2014 data available after liftoff';
-          dom.dataStatus.className = 'data-status data-status--prelaunch';
+          newStatusText = 'Pre-launch \u2014 data available after liftoff';
+          newStatusClass = 'data-status data-status--prelaunch';
         } else {
-          dom.dataStatus.textContent = 'Simulated data (AROW unavailable)';
-          dom.dataStatus.className = 'data-status data-status--mock';
+          newStatusText = 'Simulated data (AROW unavailable)';
+          newStatusClass = 'data-status data-status--mock';
+        }
+        if (dom.dataStatus.textContent !== newStatusText) {
+          dom.dataStatus.textContent = newStatusText;
+        }
+        if (dom.dataStatus.className !== newStatusClass) {
+          dom.dataStatus.className = newStatusClass;
         }
       }
 
-      // Dashboard disclaimer
+      // Dashboard disclaimer — only update when changed to prevent flicker
       var disclaimerEl = document.getElementById('dash-disclaimer');
       if (disclaimerEl) {
+        var arowLink = '<a href="https://artemis.cdnspace.ca" target="_blank" rel="noopener noreferrer">AROW Community API</a>';
+        var newDisclaimer;
         if (dataSource === 'live') {
-          disclaimerEl.textContent = 'Showing live telemetry from NASA AROW.';
+          newDisclaimer = 'Showing live telemetry from NASA AROW.';
         } else if (dataSource === 'horizons') {
-          disclaimerEl.textContent = communityOrbitAvailable
-            ? 'Orbital data from AROW community API. Attitude telemetry streamed live.'
+          newDisclaimer = communityOrbitAvailable
+            ? 'Orbital data from ' + arowLink + '. Attitude telemetry streamed live.'
             : 'Position and velocity computed from JPL Horizons ephemeris data (spacecraft ID \u22121024).';
         } else if (dataSource === 'mock') {
-          disclaimerEl.textContent = communityOrbitAvailable
-            ? 'Live telemetry via NASA AROW'
+          newDisclaimer = communityOrbitAvailable
+            ? 'Live telemetry via ' + arowLink
             : 'Data shown is estimated based on mission trajectory. Live NASA telemetry is not yet available.';
         } else {
-          disclaimerEl.textContent = communityOrbitAvailable
-            ? 'Live telemetry via NASA AROW'
+          newDisclaimer = communityOrbitAvailable
+            ? 'Live telemetry via ' + arowLink
             : 'Data shown is estimated based on mission trajectory. Live NASA telemetry is not yet available.';
+        }
+        if (disclaimerEl.innerHTML !== newDisclaimer) {
+          disclaimerEl.innerHTML = newDisclaimer;
         }
       }
 
@@ -1678,12 +1689,17 @@ window.onerror = function (msg, url, line) {
         if (data.lastUpdated) {
           var updEl = document.getElementById('schedule-updated');
           if (updEl) {
-            var ago = Math.round((Date.now() - new Date(data.lastUpdated).getTime()) / 60000);
-            updEl.textContent = 'Schedule updated ' + (ago < 1 ? 'just now' : ago + ' min ago');
+            var updDate = new Date(data.lastUpdated);
+            var updAgeSec = Math.round((Date.now() - updDate.getTime()) / 1000);
+            var updAgeStr;
+            if (updAgeSec < 10) updAgeStr = 'just now';
+            else if (updAgeSec < 60) updAgeStr = updAgeSec + ' seconds ago';
+            else if (updAgeSec < 3600) updAgeStr = Math.round(updAgeSec / 60) + ' minutes ago';
+            else updAgeStr = Math.round(updAgeSec / 3600) + ' hours ago';
+            updEl.textContent = 'Schedule last update: ' + updDate.toLocaleTimeString() + ' (' + updAgeStr + ')';
           }
         }
 
-        console.log('[Schedule] Remote schedule loaded, ' + data.events.length + ' events, ' + (data.crewSchedule || []).length + ' crew blocks');
 
         // Re-render timeline with new data
         try {
@@ -2470,8 +2486,6 @@ window.onerror = function (msg, url, line) {
       })
       .then(function (data) {
         if (data && data.items) {
-          console.log('News: loaded ' + data.items.length + ' items from ' +
-            (data.feedStatus || []).filter(function (f) { return f.items > 0; }).length + ' sources');
           renderNews(data.items);
         } else {
           renderNews([]);
@@ -3464,7 +3478,15 @@ window.onerror = function (msg, url, line) {
       el.textContent = '';
       return;
     }
-    el.textContent = ' Last query: ' + formatSWTime(queriedAt) + '.';
+    var d = new Date(queriedAt);
+    if (isNaN(d.getTime())) { el.textContent = ''; return; }
+    var ageSec = Math.round((Date.now() - d.getTime()) / 1000);
+    var ageStr;
+    if (ageSec < 10) ageStr = 'just now';
+    else if (ageSec < 60) ageStr = ageSec + ' seconds ago';
+    else if (ageSec < 3600) ageStr = Math.round(ageSec / 60) + ' minutes ago';
+    else ageStr = Math.round(ageSec / 3600) + ' hours ago';
+    el.textContent = ' Last update: ' + d.toLocaleTimeString() + ' (' + ageStr + ').';
   }
 
   function fetchSpaceWeather() {
@@ -3658,8 +3680,8 @@ window.onerror = function (msg, url, line) {
   // ── Trajectory SVG visualization ──────────────────────────────────────
 
   function injectTrajectorySVG() {
-    var section = document.getElementById('audio-radar');
-    if (!section || document.getElementById('trajectory-viz')) return;
+    var metBlock = document.querySelector('.hero__met');
+    if (!metBlock || document.getElementById('trajectory-viz')) return;
     var container = document.createElement('div');
     container.id = 'trajectory-viz';
     container.className = 'trajectory-viz';
@@ -3678,7 +3700,7 @@ window.onerror = function (msg, url, line) {
         '<circle cx="102" cy="100" r="5" class="traj-orion" id="traj-orion-dot"/>' +
         '<text x="102" y="85" class="traj-orion-label" id="traj-orion-label" text-anchor="middle">Orion</text>' +
       '</svg>';
-    section.parentNode.insertBefore(container, section);
+    metBlock.parentNode.insertBefore(container, metBlock);
   }
 
   function updateTrajectoryViz(t) {
