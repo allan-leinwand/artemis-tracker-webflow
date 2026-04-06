@@ -276,10 +276,10 @@ window.onerror = function (msg, url, line) {
   /** Format a number with thousand separators */
   function fmtNum(n, decimals) {
     if (n == null) return '\u2014';
-    var fixed = typeof decimals === 'number' ? n.toFixed(decimals) : Math.round(n).toString();
-    var parts = fixed.split('.');
-    // No separators — whole numbers read correctly with screen readers
-    return parts.join('.');
+    var opts = typeof decimals === 'number'
+      ? { minimumFractionDigits: decimals, maximumFractionDigits: decimals }
+      : { maximumFractionDigits: 0 };
+    return new Intl.NumberFormat('en-US', opts).format(n);
   }
 
   /** km to miles */
