@@ -3716,18 +3716,48 @@ window.onerror = function (msg, url, line) {
     var desc = document.querySelector('#trajectory-viz .trajectory-svg desc');
     if (!dot) return;
 
-    // Compute progress along the path: 0 = Earth, 1 = Moon (at closest approach)
-    var totalDist = t.distEarthKm + t.distMoonKm;
-    var progress = totalDist > 0 ? t.distEarthKm / totalDist : 0;
-    progress = Math.max(0, Math.min(1, progress));
+    // Determine mission phase and MET
+    var metH = getMETHours();
+    var phase = getCurrentPhase(metH);
+
+    // Phase boundaries (MET hours) for path mapping
+    var FLYBY_START_MET = 120;    // lunar-flyby phase begins
+    var FLYBY_END_MET   = 138.87; // return-coast begins
+    var MISSION_END_MET = 226.5;  // splashdown
 
     // Get the trajectory path element and compute point along it
     var pathEl = document.querySelector('.traj-path');
     if (pathEl && pathEl.getTotalLength) {
       var len = pathEl.getTotalLength();
-      // Map progress to the outbound half of the path (0 to 0.5 of total path)
-      // If returning (distEarthKm decreasing), use the return half (0.5 to 1.0)
-      var pathFraction = progress * 0.5; // outbound: 0..0.5
+      var pathFraction;
+      var isReturn = (phase === 'return-coast' || phase === 'reentry' || phase === 'recovery');
+      var isFlyby  = (phase === 'lunar-flyby');
+
+      // The original path pinches tightly at the Moon (~3% of path length).
+      // Segment 1 (outbound arc) ≈ pathFraction 0–0.49
+      // Segment 2 (Moon pinch)   ≈ pathFraction 0.49–0.51
+      // Segment 3 (return arc)   ≈ pathFraction 0.51–1.0
+      var CLOSE_APPROACH_MET = 123; // past far side, signal reacquired
+
+      if (isFlyby && metH < CLOSE_APPROACH_MET) {
+        // Close approach (MET 120–123): transit through Moon pinch
+        var closeP = Math.max(0, Math.min(1, (metH - FLYBY_START_MET) / (CLOSE_APPROACH_MET - FLYBY_START_MET)));
+        pathFraction = 0.47 + closeP * 0.06; // 0.47 → 0.53
+      } else if (isFlyby) {
+        // Departure (MET 123–139): slowly move along return arc near Moon
+        var departP = Math.max(0, Math.min(1, (metH - CLOSE_APPROACH_MET) / (FLYBY_END_MET - CLOSE_APPROACH_MET)));
+        pathFraction = 0.53 + departP * 0.07; // 0.53 → 0.60
+      } else if (isReturn) {
+        // Return leg: MET-based from 0.60 to 1.0
+        var returnProgress = Math.max(0, Math.min(1, (metH - FLYBY_END_MET) / (MISSION_END_MET - FLYBY_END_MET)));
+        pathFraction = 0.60 + returnProgress * 0.40;
+      } else {
+        // Outbound leg: distance-based, 0 to 0.47
+        var totalDist = t.distEarthKm + t.distMoonKm;
+        var progress = totalDist > 0 ? t.distEarthKm / totalDist : 0;
+        progress = Math.max(0, Math.min(1, progress));
+        pathFraction = progress * 0.47;
+      }
       var pt = pathEl.getPointAtLength(pathFraction * len);
       dot.setAttribute('cx', pt.x.toFixed(1));
       dot.setAttribute('cy', pt.y.toFixed(1));
@@ -3739,7 +3769,14 @@ window.onerror = function (msg, url, line) {
 
     // Update alt/desc text
     var pctMoon = Math.round((t.distEarthKm / EARTH_MOON_AVG_KM) * 100);
-    var trajText = 'Orion is ' + fmtNum(t.distEarthKm) + ' km from Earth and ' + fmtNum(t.distMoonKm) + ' km from the Moon, ' + pctMoon + '% of the way to lunar flyby.';
+    var trajText;
+    if (phase === 'lunar-flyby') {
+      trajText = 'Orion is ' + fmtNum(t.distMoonKm) + ' km from the Moon — lunar flyby in progress.';
+    } else if (phase === 'return-coast' || phase === 'reentry' || phase === 'recovery') {
+      trajText = 'Orion is ' + fmtNum(t.distEarthKm) + ' km from Earth, returning home.';
+    } else {
+      trajText = 'Orion is ' + fmtNum(t.distEarthKm) + ' km from Earth, ' + pctMoon + '% of the way to lunar flyby.';
+    }
     if (desc) desc.textContent = trajText;
 
   }
